@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% if post.cover_image %}
+    <img src="{{ post.cover_image.url }}" alt="Cover Image" style="max-width: 100%;">
+{% endif %}
+
+    <title>{{ post.title }}</title>
+</head>
+{% if user == post.author %}
+    <p>
+        <a href="{% url 'edit_post' post.id %}">✏️ Edit</a> |
+        <a href="{% url 'delete_post' post.id %}">🗑️ Delete</a>
+    </p>
+{% endif %}
+
+<body>
+    <h1>{{ post.title }}</h1>
+    <p><em>Posted on {{ post.created_at }}</em></p>
+    <div>
+        {{ post.content|linebreaks }}
+    </div>
+    <h3>💬 Comments</h3>
+
+{% for comment in comments %}
+    <div style="margin-bottom: 10px; border-bottom: 1px solid #ccc;">
+        <strong>{{ comment.author }}</strong> - <em>{{ comment.created_at }}</em>
+        <p>{{ comment.content }}</p>
+    </div>
+{% empty %}
+    <p>No comments yet.</p>
+{% endfor %}
+
+{% if user.is_authenticated %}
+    <h4>Leave a Comment</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Post Comment</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'login' %}">Login</a> to comment.</p>
+{% endif %}
+
+    <p><a href="{% url 'post_list' %}">← Back to all posts</a></p>
+</body>
+
+</html>
